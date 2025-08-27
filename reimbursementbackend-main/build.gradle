@@ -1,0 +1,88 @@
+buildscript {
+  repositories {
+    String buildId = System.getenv("BUILD_ID")
+    if (!(buildId != null && buildId.trim())) {
+      mavenLocal()
+    }
+    maven {
+      url "${repositoryUrl}"
+      allowInsecureProtocol = project.getProperties().getOrDefault('allowInsecureProtocol', false)
+    }
+  }
+
+  dependencies {
+    classpath "com.automationedge.platform:ae-gradle-plugin:1.0.7"
+  }
+}
+
+plugins {
+  id "application"
+}
+
+defaultTasks "clean"
+
+apply plugin: 'ae-platform-build'
+apply plugin: 'io.freefair.lombok'
+
+lombok {
+  version = "1.18.34"
+}
+
+test {
+  systemProperty "LOG_DIR", "${projectDir}/logs"
+  systemProperty "SERVICE_HOME", "${projectDir}"
+
+  classpath = project.sourceSets.test.runtimeClasspath + files("${projectDir}/src/main/config")
+}
+
+dependencies {
+  implementation(platform("com.automationedge.platform:ae-platform-bom:${thirdPartyVersions['ae-platform']}"))
+
+  implementation("com.automationedge.platform:ae-platform-web")
+  implementation("com.automationedge.platform:ae-platform-tomcat")
+  implementation("com.automationedge.platform:ae-platform-crypto")
+  implementation("com.automationedge.platform:ae-platform-utils")
+
+  implementation("com.automationedge.platform:ae-platform-logging")
+  
+  // RestifyDB
+  implementation("com.automationedge.app.platform:ae-app-platform-restifydb:${thirdPartyVersions['ae-app-platform']}")
+
+  // Security
+  implementation("com.automationedge.platform:ae-platform-security-jwt")
+  implementation("org.springframework.boot:spring-boot-actuator-autoconfigure") // EndpointRequest
+
+  // Feign
+  implementation("com.automationedge.platform:ae-platform-feign")
+ implementation("com.automationedge.clients:ae-feign-client:${thirdPartyVersions['ae-feign-client']}")
+
+  implementation("org.postgresql:postgresql")
+  implementation("org.liquibase:liquibase-core")
+
+  // Prometheus metrics export
+  implementation("io.micrometer:micrometer-registry-prometheus")
+
+  // Tracing
+  implementation("io.micrometer:micrometer-tracing-bridge-brave")
+
+  // For sending emails
+  implementation("org.springframework.boot:spring-boot-starter-mail")
+  
+}
+
+// Application configuration
+mainClassName = "com.automationedge.reimbursement.reimbursementApplication"
+applicationName = "reimbursement"
+
+applicationDefaultJvmArgs = [
+    '-server',
+    '-Xms256m',
+    '-Xmx512m',
+    '-XX:+HeapDumpOnOutOfMemoryError',
+    '-Dspring.jmx.enabled=false',
+    '-DAPP_HOME=XxxAPP_HOMExxX',
+    '-Dspring.config.additional-location=XxxAPP_HOMExxX/config/application-override.properties',
+    '-DLOG_DIR=XxxAPP_HOMExxX/logs',
+    '-Dshutdown.enabled=true'
+]
+

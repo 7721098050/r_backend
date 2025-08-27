@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet author="AutomationEdge" id="create-table-tenant" failOnError="true">
+        <comment>Auth user table</comment>
+        <createTable tableName="tenant">
+            <column name="id" type="BIGINT" autoIncrement="true" generationType="ALWAYS">
+                <constraints primaryKey="true" primaryKeyName="pk_tenant" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(256)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="unq_tenant_name"/>
+            </column>
+            <column name="code" type="VARCHAR(16)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="unq_tenant_code"/>
+            </column>
+            <column name="description" type="VARCHAR(1024)"/>
+            <column name="configuration" type="JSONB"/>
+            <column name="created_at" type="TIMESTAMPTZ" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMPTZ" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

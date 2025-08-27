@@ -1,0 +1,47 @@
+[access]
+restrict = true  # Disable table-level restrictions globally
+
+[[access.tables]]
+name = "reimb_tenants"
+permissions = ["select", "insert", "update", "delete"]
+fields = []  # All fields allowed
+
+[[access.tables]]
+name = "reimb_users"
+permissions = ["select", "insert", "update", "delete"]
+fields = []  # All fields allowed
+
+[[access.tables]]
+name = "reimb_requests"
+permissions = ["select", "insert", "update", "delete"]
+fields = []  # All fields allowed
+
+[[access.tables]]
+name = "reimb_details"
+permissions = ["select", "insert", "update", "delete"]
+fields = []  # All fields allowed
+
+[[access.tables]]
+name = "reimb_docs"
+permissions = ["select", "insert", "update", "delete"]
+fields = []  # All fields allowed
+
+[[access.tables]]
+name = "reimb_approver"
+permissions = ["select", "insert", "update", "delete"]
+fields = []  # All fields allowed
+
+[[access.tables]]
+name = "reimb_password_reset"
+permissions = ["select", "insert", "update", "delete"]
+fields = []  # All fields allowed
+
+[[access.tables]]
+name = "reimb_masters"
+permissions = ["select", "insert", "update", "delete"]
+fields = []  # All fields allowed
+
+[[access.tables]]
+name = "reimb_parameters"
+permissions = ["select", "insert", "update", "delete"]
+fields = []  # All fields allowed

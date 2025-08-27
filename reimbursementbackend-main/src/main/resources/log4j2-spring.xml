@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="60">
+  <Properties>
+    <Property name="LEVEL">INFO</Property>
+    <Property name="LOG_PATTERN">%d{yyyy-MM-dd'T'HH:mm:ss.SSSZZZZ} [${spring:spring.application.name},%X{traceId},%X{spanId}] [%t] %-5p %c{1.}:%L - %m%n</Property>
+    <Property name="LAST_MODIFIED_AGE">30d</Property>
+    <Property name="LOG_DIR">${sys:LOG_DIR}</Property>
+    <Property name="LOG_FILE_SIZE">10MB</Property>
+    <Property name="ROLLOVER_FILE_INDEX">nomax</Property>
+  </Properties>
+
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="${LOG_PATTERN}"/>
+    </Console>
+
+    <RollingRandomAccessFile name="reimbursementLog"
+      fileName="${LOG_DIR}/${spring:spring.application.name}.log"
+      filePattern="${LOG_DIR}/${spring:spring.application.name}-%d{yyyy-MM-dd}-%i.log.gz"
+      ignoreExceptions="false">
+      <PatternLayout pattern="${LOG_PATTERN}"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="${LOG_FILE_SIZE}"/>
+        <TimeBasedTriggeringPolicy/>
+      </Policies>
+      <DefaultRolloverStrategy fileIndex="${ROLLOVER_FILE_INDEX}">
+        <Delete basePath="${LOG_DIR}" maxDepth="1">
+          <IfFileName glob="${spring:spring.application.name}-*.log.gz"/>
+          <IfLastModified age="${LAST_MODIFIED_AGE}"/>
+        </Delete>
+      </DefaultRolloverStrategy>
+    </RollingRandomAccessFile>
+
+    <RollingRandomAccessFile name="HealthLog" fileName="${LOG_DIR}/health.log"
+      filePattern="${LOG_DIR}/health-%d{yyyy-MM-dd}-%i.log.gz" ignoreExceptions="false">
+      <PatternLayout pattern="${LOG_PATTERN}"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="${LOG_FILE_SIZE}"/>
+        <TimeBasedTriggeringPolicy/>
+      </Policies>
+      <DefaultRolloverStrategy fileIndex="${ROLLOVER_FILE_INDEX}">
+        <Delete basePath="${LOG_DIR}" maxDepth="1">
+          <IfFileName glob="health-*.log.gz"/>
+          <IfLastModified age="${LAST_MODIFIED_AGE}"/>
+        </Delete>
+      </DefaultRolloverStrategy>
+    </RollingRandomAccessFile>
+
+    <RollingRandomAccessFile name="StuckThreadLog" fileName="${LOG_DIR}/stuck-thread.log"
+      filePattern="${LOG_DIR}/stuck-thread-%d{yyyy-MM-dd}-%i.log.gz" ignoreExceptions="false">
+      <PatternLayout pattern="${LOG_PATTERN}">
+      </PatternLayout>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="${LOG_FILE_SIZE}"/>
+        <TimeBasedTriggeringPolicy/>
+      </Policies>
+      <DefaultRolloverStrategy fileIndex="${ROLLOVER_FILE_INDEX}">
+        <Delete basePath="${LOG_DIR}" maxDepth="1">
+          <IfFileName glob="stuck-thread-*.log.gz"/>
+          <IfLastModified age="${LAST_MODIFIED_AGE}"/>
+        </Delete>
+      </DefaultRolloverStrategy>
+    </RollingRandomAccessFile>
+
+    <RollingRandomAccessFile name="CatalinaLog" fileName="${LOG_DIR}/catalina.log"
+      filePattern="${LOG_DIR}/catalina-%d{yyyy-MM-dd}-%i.log.gz" ignoreExceptions="false">
+      <PatternLayout pattern="${LOG_PATTERN}"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="${LOG_FILE_SIZE}"/>
+        <TimeBasedTriggeringPolicy/>
+      </Policies>
+      <DefaultRolloverStrategy fileIndex="${ROLLOVER_FILE_INDEX}">
+        <Delete basePath="${LOG_DIR}" maxDepth="1">
+          <IfFileName glob="catalina-*.log.gz"/>
+          <IfLastModified age="${LAST_MODIFIED_AGE}"/>
+        </Delete>
+      </DefaultRolloverStrategy>
+    </RollingRandomAccessFile>
+
+    <RollingRandomAccessFile name="FeignRequestLog" fileName="${LOG_DIR}/feign-request.log"
+      filePattern="${LOG_DIR}/feign-request-%d{yyyy-MM-dd}-%i.log.gz" ignoreExceptions="false">
+      <PatternLayout pattern="${LOG_PATTERN}">
+      </PatternLayout>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="${LOG_FILE_SIZE}"/>
+        <TimeBasedTriggeringPolicy/>
+      </Policies>
+      <DefaultRolloverStrategy fileIndex="${ROLLOVER_FILE_INDEX}">
+        <Delete basePath="${LOG_DIR}" maxDepth="1">
+          <IfFileName glob="feign-request-*.log.gz"/>
+          <IfLastModified age="${LAST_MODIFIED_AGE}"/>
+        </Delete>
+      </DefaultRolloverStrategy>
+    </RollingRandomAccessFile>
+
+  </Appenders>
+
+  <Loggers>
+    <Logger name="com.automationedge.platform.actuate.health" additivity="false">
+      <AppenderRef ref="HealthLog"/>
+    </Logger>
+
+    <Logger name="org.apache.catalina" additivity="false">
+      <AppenderRef ref="CatalinaLog"/>
+    </Logger>
+
+    <Logger name="com.automationedge.platform.core.actuate.web.StuckThreadDetectionFilter"
+      additivity="false">
+      <AppenderRef ref="StuckThreadLog"/>
+    </Logger>
+
+    <Logger name="com.automationedge.clients" additivity="false" level="DEBUG">
+      <AppenderRef ref="FeignRequestLog"/>
+    </Logger>
+
+    <Logger
+      name="org.springframework.cloud.openfeign.loadbalancer.RetryableFeignBlockingLoadBalancerClient"
+      additivity="false" level="DEBUG">
+      <AppenderRef ref="FeignRequestLog"/>
+    </Logger>
+
+    <Logger name="com.automationedge.reimbursement" level="DEBUG" additivity="false">
+      <AppenderRef ref="reimbursementLog"/>
+    </Logger>
+
+
+    <!--    <Logger name="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" level="TRACE" additivity="false">-->
+    <!--      <AppenderRef ref="Console"/>-->
+    <!--      <AppenderRef ref="AutomationEdgeLog"/>-->
+    <!--    </Logger>-->
+
+    <!--    <Logger name="org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping" level="TRACE" additivity="false">-->
+    <!--      <AppenderRef ref="Console"/>-->
+    <!--      <AppenderRef ref="AutomationEdgeLog"/>-->
+    <!--    </Logger>-->
+
+    <Root level="${LEVEL}">
+      <AppenderRef ref="Console"/>
+      <AppenderRef ref="reimbursementLog"/>
+    </Root>
+  </Loggers>
+</Configuration>
